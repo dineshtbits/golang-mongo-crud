@@ -3,13 +3,18 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
+	"os"
+)
+
+var client, ctx = MongoClient()
+
+var (
+	Client = client
+	CTX    = ctx
 )
 
 func MongoClient() (*mongo.Client, context.Context) {
@@ -18,7 +23,7 @@ func MongoClient() (*mongo.Client, context.Context) {
 		log.Fatal(err)
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx := context.Background()
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -32,7 +37,5 @@ func MongoClient() (*mongo.Client, context.Context) {
 	fmt.Println("Successfully connected to local mongo....here are current databases")
 	fmt.Println(databases)
 
-	
 	return client, ctx
 }
-

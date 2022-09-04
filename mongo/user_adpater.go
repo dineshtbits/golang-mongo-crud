@@ -9,47 +9,41 @@ import (
 )
 
 func CreateUser(user model.User) *mongo.InsertOneResult {
-	client, ctx := MongoClient()
-	database := client.Database("quickstart")
+	database := Client.Database("quickstart")
 	users := database.Collection("users")
-	insertedUser, err := users.InsertOne(ctx, user)
-	defer client.Disconnect(ctx)
-
+	insertedUser, err := users.InsertOne(CTX, user)
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return insertedUser
 }
 
 func FindAllUsers() []model.User {
-	client, ctx := MongoClient()
-	database := client.Database("quickstart")
-	cursor, err := database.Collection("users").Find(ctx, bson.M{})
+	database := Client.Database("quickstart")
+	cursor, err := database.Collection("users").Find(CTX, bson.M{})
 	if err != nil {
 		panic(err)
 	}
 	var users []model.User
-	if err := cursor.All(ctx, &users); err != nil {
+	if err := cursor.All(CTX, &users); err != nil {
 		panic(err)
 	}
 	return users
 }
 
 func DeleteUser(uid string) *mongo.DeleteResult {
-	client, ctx := MongoClient()
-	database := client.Database("quickstart")
+	database := Client.Database("quickstart")
 	users := database.Collection("users")
-	result, err := users.DeleteOne(ctx, bson.M{"_id": uid})
+	result, err := users.DeleteOne(CTX, bson.M{"_id": uid})
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	fmt.Println(result)
 	return result
 }
 
 func UpdateUser(uid string, user model.User) *mongo.UpdateResult {
-	client, ctx := MongoClient()
-	database := client.Database("quickstart")
+	database := Client.Database("quickstart")
 	users := database.Collection("users")
 	fmt.Println(user)
 	filter := bson.M{"_id": uid}
@@ -72,11 +66,10 @@ func UpdateUser(uid string, user model.User) *mongo.UpdateResult {
 		{"$set", updates},
 	}
 
-	updateResult, err := users.UpdateOne(ctx, filter, setMap)
-	defer client.Disconnect(ctx)
+	updateResult, err := users.UpdateOne(CTX, filter, setMap)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return updateResult
 }
